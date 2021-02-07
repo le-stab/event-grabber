@@ -4,6 +4,8 @@ from bs4 import BeautifulSoup
 import requests
 
 insite = input('\n\nsite: ')
+
+
 class Site:
     def __init__(self, site):
         self.site = site
@@ -21,6 +23,7 @@ class Site:
 
             for speaker in names:
                 print(speaker.getText())
+
 
 site = Site(insite)
 
