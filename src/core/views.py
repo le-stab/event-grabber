@@ -7,7 +7,7 @@ import requests
 # Create your views here.
 
 
-def event_view(request):
+def event_day_view(request):
     url = 'https://mentalwellness.byhealthmeans.com/encore-weekend/?utm_source=ActiveCampaign&utm_medium=email&utm_content=Last+day+for+Encore+Weekend&utm_campaign=MNWL20'
 
     startpage = requests.get(url)
