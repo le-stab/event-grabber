@@ -18,11 +18,15 @@ def event_view(request):
         name = requests.get(button['href'])
         nsoup = BeautifulSoup(name.text, "html.parser")
 
-        names = nsoup.find_all('h1', class_='presenter-title')
+        talktitle = nsoup.find_all('h1', class_='presenter-title')
 
-        for speaker in names:
-            title = Event(title=speaker.getText())
+        for title in talktitle:
+            speakernamebeta = title.find('span')
+            speakername = speakernamebeta.getText().replace('with', '')
+            titlename = title.getText().replace('with' + speakername, '')
+            print('talk name: %s | speaker name: %s' % (titlename, speakername))
+
+            # title = Event(title=speaker.getText())
             # title.save()
-            print(f"saved to DB: {title}")
 
-    return render(request, 'core/event.html')
+    return render(request, 'core/event.html')   
