@@ -8,6 +8,8 @@ import requests
 
 
 def event_day_view(request):
+    global titlename
+    global speakername
     invalid_chars = ''':*"?|'''
     url = 'https://mentalwellness.byhealthmeans.com/encore-weekend/?utm_source=ActiveCampaign&utm_medium=email&utm_content=Last+day+for+Encore+Weekend&utm_campaign=MNWL20'
 
@@ -26,6 +28,7 @@ def event_day_view(request):
             speakername = speakernamebeta.getText().replace('with', '')
             titlename = title.getText().replace('with' + speakername, '')
             print('talk name: %s | speaker name: %s' % (titlename, speakername))
+        
 
         mp3 = requests.get(button['href'])
         msoup = BeautifulSoup(mp3.text, "html.parser")
@@ -35,16 +38,15 @@ def event_day_view(request):
         for m in mp3s:
                 #get mp3 link
                 url = m['src']
+                print(f'{url}')
+
+                revisedstr = f'{titlename} {speakername}'
 
                 # remove invalid chars in mp3 link
-                for t in title:
-                    prestitle = t.getText()
-                    global revisedstr
+                for char in invalid_chars:
+                    revisedstr = revisedstr.replace(char, '')
 
-                    revisedstr = prestitle
-
-                    for char in invalid_chars:
-                        revisedstr = revisedstr.replace(char, '')
+                
 
             # title = Event(title=speaker.getText())
             # title.save()
