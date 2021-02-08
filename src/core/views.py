@@ -46,6 +46,8 @@ def event_day_view(request):
                 for char in invalid_chars:
                     revisedstr = revisedstr.replace(char, '')
 
+                print(revisedstr)
+
                 
 
             # title = Event(title=speaker.getText())
