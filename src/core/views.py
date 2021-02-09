@@ -3,51 +3,60 @@ from django.shortcuts import render
 from .models import Event
 from bs4 import BeautifulSoup
 import requests
+from .forms import EventSingleForm
 
 # Create your views here.
 
 
 def event_single_view(request):
-    invalid_chars = ''':*"?|'''
-    url = 'https://mentalwellness.byhealthmeans.com/encore-weekend/?utm_source=ActiveCampaign&utm_medium=email&utm_content=Last+day+for+Encore+Weekend&utm_campaign=MNWL20'
+
     list = []
-    startpage = requests.get(url)
-    bsoup = BeautifulSoup(startpage.text, "html.parser")
-    buttons = bsoup.find_all('a', class_='button')
+    event_single_form = EventSingleForm
 
-    for button in buttons:
-        name = requests.get(button['href'])
-        nsoup = BeautifulSoup(name.text, "html.parser")
+    if request.method == 'POST':
+        filled_form = EventSingleForm(request.POST)
+        if filled_form.is_valid():
 
-        talktitle = nsoup.find_all('h1', class_='presenter-title')
+            invalid_chars = ''':*"?|'''
+            url = filled_form.cleaned_data['event_url']
+            startpage = requests.get(url)
+            bsoup = BeautifulSoup(startpage.text, "html.parser")
+            buttons = bsoup.find_all('a', class_='button')
 
-        for title in talktitle:
-            speaker_name_beta = title.find('span')
-            speaker_name = speaker_name_beta.getText().replace('with', '')
-            title_name = title.getText().replace('with' + speaker_name, '')
-            print('\ntalk name: %s | speaker name: %s' % (title_name, speaker_name))
+            for button in buttons:
+                name = requests.get(button['href'])
+                nsoup = BeautifulSoup(name.text, "html.parser")
 
-        mp3 = requests.get(button['href'])
-        msoup = BeautifulSoup(mp3.text, "html.parser")
+                talktitle = nsoup.find_all('h1', class_='presenter-title')
 
-        mp3s = msoup.find_all('source')
+                for title in talktitle:
+                    speaker_name_beta = title.find('span')
+                    speaker_name = speaker_name_beta.getText().replace('with', '')
+                    title_name = title.getText().replace('with' + speaker_name, '')
+                    print('\ntalk name: %s | speaker name: %s' %
+                          (title_name, speaker_name))
 
-        for mp3_link in mp3s:
-            # get mp3 link
-            mp3url = mp3_link['src']
-            print(f'{mp3url}')
+                mp3 = requests.get(button['href'])
+                msoup = BeautifulSoup(mp3.text, "html.parser")
 
-            revised_name = f'{title_name} {speaker_name}'
+                mp3s = msoup.find_all('source')
 
-            # remove invalid chars in mp3 link
-            for char in invalid_chars:
-                revised_name = revised_name.replace(char, '')
+                for mp3_link in mp3s:
+                    # get mp3 link
+                    mp3_url = mp3_link['src']
+                    print(f'{mp3_url}')
 
-            print(revised_name)
+                    revised_name = f'{title_name} {speaker_name}'
 
-            # title = Event(title=speaker.getText())
-            # title.save()
+                    # remove invalid chars in mp3 link
+                    for char in invalid_chars:
+                        revised_name = revised_name.replace(char, '')
 
-        list.append(f'{revised_name} | {mp3url} ')
+                    print(revised_name)
 
-    return render(request, 'core/event_single.html', {'list': list})
+                list.append(f'{revised_name} | {mp3_url} ')
+            print(filled_form.cleaned_data['event_url'])
+            return render(request, 'core/event_single.html', {'list': list})
+    else:
+        form = EventSingleForm()
+        return render(request, 'core/event_single.html', {'form': form, 'list': list})

@@ -2,9 +2,9 @@
 
 {% block 'body' %}
 <h1>Event</h1>
-    <ul>
-        {% for item in list %}
-        <li>{{ item }}</li>
-        {% endfor %}
-    </ul>
+<form action="{% url 'event_single' %}" method="POST">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit">
+</form>
 {% endblock %}
