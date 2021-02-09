@@ -25,8 +25,7 @@ def event_single_view(request):
             speaker_name_beta = title.find('span')
             speaker_name = speaker_name_beta.getText().replace('with', '')
             title_name = title.getText().replace('with' + speaker_name, '')
-            print('\ntalk name: %s | speaker name: %s' %
-                  (title_name, speaker_name))
+            print('\ntalk name: %s | speaker name: %s' % (title_name, speaker_name))
 
         mp3 = requests.get(button['href'])
         msoup = BeautifulSoup(mp3.text, "html.parser")
@@ -35,8 +34,8 @@ def event_single_view(request):
 
         for mp3_link in mp3s:
             # get mp3 link
-            url = mp3_link['src']
-            print(f'{url}')
+            mp3url = mp3_link['src']
+            print(f'{mp3url}')
 
             revised_name = f'{title_name} {speaker_name}'
 
@@ -48,5 +47,7 @@ def event_single_view(request):
 
             # title = Event(title=speaker.getText())
             # title.save()
+
+        list.append(f'{revised_name} | {mp3url} ')
 
     return render(request, 'core/event_single.html', {'list': list})
