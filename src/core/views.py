@@ -11,7 +11,6 @@ from .forms import EventSingleForm
 def event_single_view(request):
 
     list = []
-    event_single_form = EventSingleForm
 
     if request.method == 'POST':
         filled_form = EventSingleForm(request.POST)
