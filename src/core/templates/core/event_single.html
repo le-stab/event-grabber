@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block 'body' %}
+<h1>Event</h1>
+    <ul>
+        {% for item in list %}
+        <li>{{ item }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
