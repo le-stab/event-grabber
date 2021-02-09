@@ -7,7 +7,7 @@ import requests
 # Create your views here.
 
 
-def event_day_view(request):
+def event_single_view(request):
     invalid_chars = ''':*"?|'''
     url = 'https://mentalwellness.byhealthmeans.com/encore-weekend/?utm_source=ActiveCampaign&utm_medium=email&utm_content=Last+day+for+Encore+Weekend&utm_campaign=MNWL20'
     list = []
@@ -25,8 +25,8 @@ def event_day_view(request):
             speaker_name_beta = title.find('span')
             speaker_name = speaker_name_beta.getText().replace('with', '')
             title_name = title.getText().replace('with' + speaker_name, '')
-            print('\ntalk name: %s | speaker name: %s' % (title_name, speaker_name))
-        
+            print('\ntalk name: %s | speaker name: %s' %
+                  (title_name, speaker_name))
 
         mp3 = requests.get(button['href'])
         msoup = BeautifulSoup(mp3.text, "html.parser")
@@ -34,17 +34,17 @@ def event_day_view(request):
         mp3s = msoup.find_all('source')
 
         for mp3_link in mp3s:
-                #get mp3 link
-                url = mp3_link['src']
-                print(f'{url}')
+            # get mp3 link
+            url = mp3_link['src']
+            print(f'{url}')
 
-                revised_name = f'{title_name} {speaker_name}'
+            revised_name = f'{title_name} {speaker_name}'
 
-                # remove invalid chars in mp3 link
-                for char in invalid_chars:
-                    revised_name = revised_name.replace(char, '')
+            # remove invalid chars in mp3 link
+            for char in invalid_chars:
+                revised_name = revised_name.replace(char, '')
 
-                print(revised_name)
+            print(revised_name)
 
             # title = Event(title=speaker.getText())
             # title.save()
