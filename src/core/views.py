@@ -10,7 +10,7 @@ import requests
 def event_day_view(request):
     invalid_chars = ''':*"?|'''
     url = 'https://mentalwellness.byhealthmeans.com/encore-weekend/?utm_source=ActiveCampaign&utm_medium=email&utm_content=Last+day+for+Encore+Weekend&utm_campaign=MNWL20'
-
+    list = []
     startpage = requests.get(url)
     bsoup = BeautifulSoup(startpage.text, "html.parser")
     buttons = bsoup.find_all('a', class_='button')
@@ -46,9 +46,7 @@ def event_day_view(request):
 
                 print(revised_name)
 
-                
-
             # title = Event(title=speaker.getText())
             # title.save()
 
-    return render(request, 'core/event.html')   
+    return render(request, 'core/event_single.html', {'list': list})
