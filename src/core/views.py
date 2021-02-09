@@ -8,8 +8,6 @@ import requests
 
 
 def event_day_view(request):
-    global titlename
-    global speakername
     invalid_chars = ''':*"?|'''
     url = 'https://mentalwellness.byhealthmeans.com/encore-weekend/?utm_source=ActiveCampaign&utm_medium=email&utm_content=Last+day+for+Encore+Weekend&utm_campaign=MNWL20'
 
@@ -24,10 +22,10 @@ def event_day_view(request):
         talktitle = nsoup.find_all('h1', class_='presenter-title')
 
         for title in talktitle:
-            speakernamebeta = title.find('span')
-            speakername = speakernamebeta.getText().replace('with', '')
-            titlename = title.getText().replace('with' + speakername, '')
-            print('talk name: %s | speaker name: %s' % (titlename, speakername))
+            speaker_name_beta = title.find('span')
+            speaker_name = speaker_name_beta.getText().replace('with', '')
+            title_name = title.getText().replace('with' + speaker_name, '')
+            print('\ntalk name: %s | speaker name: %s' % (title_name, speaker_name))
         
 
         mp3 = requests.get(button['href'])
@@ -35,18 +33,18 @@ def event_day_view(request):
 
         mp3s = msoup.find_all('source')
 
-        for m in mp3s:
+        for mp3_link in mp3s:
                 #get mp3 link
-                url = m['src']
+                url = mp3_link['src']
                 print(f'{url}')
 
-                revisedstr = f'{titlename} {speakername}'
+                revised_name = f'{title_name} {speaker_name}'
 
                 # remove invalid chars in mp3 link
                 for char in invalid_chars:
-                    revisedstr = revisedstr.replace(char, '')
+                    revised_name = revised_name.replace(char, '')
 
-                print(revisedstr)
+                print(revised_name)
 
                 
 
