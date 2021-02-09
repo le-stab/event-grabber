@@ -40,15 +40,10 @@ def event_day_view(request):
 
             revisedstr = f'{titlename} {speakername}'
 
-<<<<<<< HEAD
             # remove invalid chars in mp3 link
             for char in invalid_chars:
                 revisedstr = revisedstr.replace(char, '')
-=======
-                print(revisedstr)
-
-                
->>>>>>> 5dee1ede52e2c4d0e9ef18f0b92ea3b5656baf13
+            print(revisedstr)
 
             # title = Event(title=speaker.getText())
             # title.save()
