@@ -1,2 +1,3 @@
 *.pyc
 src/core/static/fontawesome-free-5.15.2-web/*
+.vscode/settings.json

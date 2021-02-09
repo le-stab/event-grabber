@@ -29,13 +29,29 @@ class TalkSession(models.Model):
 
 
 class Event(models.Model):
-    name = models.CharField(max_length=60, blank=False)
-    start_date = models.DateField(blank=True)
-    duration = models.IntegerField(blank=True, default=1)
+    name = models.CharField(
+        blank=False, max_length=60, verbose_name='Event name')
+    start_date = models.DateField(
+        blank=True)
+    duration = models.IntegerField(
+        blank=True, default=1)
     category = models.ManyToManyField(Category)
-    css_link_button = models.URLField()
-    css_audio_file = models.URLField()
-    scrape_ready = models.BooleanField(default=False, blank=True)
+    schedule = models.CharField(
+        blank=True, max_length=20, verbose_name='Schedule path')
+    landing_page = models.CharField(
+        blank=False, max_length=100)
+    css_link_button = models.CharField(
+        max_length=20, blank=True, verbose_name='Button link (CSS)')
+    css_image = models.CharField(
+        max_length=20, blank=True, verbose_name='Photo (CSS)')
+    css_talk_session = models.CharField(
+        max_length=20, blank=True, verbose_name='Talk title (CSS)')
+    css_audio_file = models.CharField(
+        max_length=20, blank=True, verbose_name='Audio file (CSS)')
+    css_video_file = models.CharField(
+        max_length=20, blank=True, verbose_name='Video file (CSS)')
+    scrape_ready = models.BooleanField(
+        blank=True, default=False)
 
     def __str__(self) -> str:
-        return f"{self.name} - {self.start_date}"
+        return f"{self.name}"
