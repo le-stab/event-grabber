@@ -2,9 +2,24 @@
 
 {% block 'body' %}
 <h1>Event</h1>
+
 <form action="{% url 'event_single' %}" method="POST">
     {% csrf_token %}
-    {{ form }}
-    <input type="submit">
+    <div class="mb-3"><label for="form.event_url.id">{{ form.event_url.label }}</label> {{ form.event_url }}</div>
+    <div class="mb-3"><label for="">{{ form.event_tpl.label }}</label> {{ form.event_tpl }}</div>
+    <input type="submit" class="btn-primary btn">
 </form>
+
+{% if list %}
+<div class="results">
+    <ul>
+    {% for item in list %}
+        <li>{{ item }}</li>
+    {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<p>{{ my_result }}</p>
+
 {% endblock %}

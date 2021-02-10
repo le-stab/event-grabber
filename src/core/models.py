@@ -20,14 +20,6 @@ class Speaker(models.Model):
         return self.name
 
 
-class TalkSession(models.Model):
-    name = models.CharField(max_length=60, blank=False)
-    speaker = models.ForeignKey(Speaker, on_delete=CASCADE)
-
-    def __str__(self) -> str:
-        return f"Event: {self.title}"
-
-
 class Event(models.Model):
     name = models.CharField(
         blank=False, max_length=60, verbose_name='Event name')
@@ -41,17 +33,31 @@ class Event(models.Model):
     landing_page = models.CharField(
         blank=False, max_length=100)
     css_link_button = models.CharField(
-        max_length=20, blank=True, verbose_name='Button link (CSS)')
+        max_length=50, blank=True, verbose_name='Button link (CSS)')
     css_image = models.CharField(
-        max_length=20, blank=True, verbose_name='Photo (CSS)')
+        max_length=50, blank=True, verbose_name='Photo (CSS)')
     css_talk_session = models.CharField(
-        max_length=20, blank=True, verbose_name='Talk title (CSS)')
+        max_length=50, blank=True, verbose_name='Talk title (CSS)')
+    css_speaker_name = models.CharField(
+        max_length=50, blank=True, verbose_name='Speaker name (CSS)')
     css_audio_file = models.CharField(
-        max_length=20, blank=True, verbose_name='Audio file (CSS)')
+        max_length=50, blank=True, verbose_name='Audio file (CSS)')
     css_video_file = models.CharField(
-        max_length=20, blank=True, verbose_name='Video file (CSS)')
+        max_length=50, blank=True, verbose_name='Video file (CSS)')
     scrape_ready = models.BooleanField(
         blank=True, default=False)
 
     def __str__(self) -> str:
         return f"{self.name}"
+
+
+class TalkSession(models.Model):
+    name = models.CharField(max_length=60, blank=False,
+                            verbose_name='Session name')
+    speaker = models.ForeignKey(
+        Speaker, on_delete=CASCADE, verbose_name='Speaker name')
+    event = models.ForeignKey(Event, on_delete=CASCADE)
+    audio_file_path = models.URLField()
+
+    def __str__(self) -> str:
+        return f"Event: {self.name}"
