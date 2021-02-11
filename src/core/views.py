@@ -8,7 +8,6 @@ from .forms import EventSingleForm
 
 # Create your views here.
 
-
 def event_single_view(request):
 
     list = []
@@ -72,6 +71,7 @@ def event_single_view(request):
                 # Session exists?
                 # yes - do nothing
                 # no - create session and assign TITLE, SPEAKER_id, AUDIO_FILE, EVENT
+                # ADD creation date to handle future scenarios with the same session name but different dates
 
                 # IF SPEAKER_NAME exists in DB (Speaker Model) get the ID
                 if len(Speaker.objects.filter(name=SPEAKER_NAME)) != 0:
@@ -104,8 +104,26 @@ def event_single_view(request):
     else:
         return render(request, 'core/event_single.html', {'form': form, })
 
+# List all TALK SESSIONS
 
-def event_list_all_view(request):
-    # Get all sessions order by date
-    all_talk_sessions = TalkSession.objects.all()
-    return render(request, 'core/event_list_all.html', {'all_talk_sessions': all_talk_sessions})
+
+def talk_sessions_list_view(request):
+    # Get all sessions (order by date)
+    talk_sessions_list = TalkSession.objects.all()
+    return render(request, 'core/talk_sessions_list.html', {'talk_sessions_list': talk_sessions_list})
+
+# List all SPEAKERS
+
+
+def speakers_list_view(request):
+    speakers_list = Speaker.objects.all()
+    return render(request, 'core/speaker_list_all.html', {'speakers_list': speakers_list})
+
+
+def mock_view(request):
+    test = Speaker.objects.all()
+    return render(request, 'core/mock.html', {'test': test})
+
+
+def home_view(request):
+    return render(request, 'core/home.html')
