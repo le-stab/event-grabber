@@ -1,3 +1,10 @@
 *.pyc
 src/core/static/fontawesome-free-5.15.2-web/*
 .vscode/settings.json
+env/Scripts/python.exe
+env/Scripts/pythonw.exe
+src/.vscode/settings.json
+.vscode/launch.json
+env/pyvenv.cfg
+src/.vscode/settings.json
+.vscode/.prettierrc
