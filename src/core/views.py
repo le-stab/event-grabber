@@ -8,7 +8,7 @@ from .forms import EventSingleForm
 
 # Create your views here.
 
-def event_single_view(request):
+def home_view(request):
 
     list = []
     form = EventSingleForm()
@@ -100,17 +100,23 @@ def event_single_view(request):
                 list.append(
                     f"{TITLE} ||| {SPEAKER_NAME} ({speaker_object.id}) ||| {AUDIO_FILE}")
 
-            return render(request, 'core/event_single.html', {'form': form, 'list': list})
+            return render(request, 'core/home.html', {'form': form, 'list': list})
     else:
-        return render(request, 'core/event_single.html', {'form': form, })
+        latest_talks = TalkSession.objects.all().order_by('-id')[:5]
+        latest_events = Event.objects.all()
+        return render(request, 'core/home.html',
+                      {'form': form,
+                       'latest_talks': latest_talks,
+                       'latest_events_list': latest_events,
+                       })
 
 # List all TALK SESSIONS
 
 
-def talk_sessions_list_view(request):
+def talks_list_view(request):
     # Get all sessions (order by date)
-    talk_sessions_list = TalkSession.objects.all()
-    return render(request, 'core/talk_sessions_list.html', {'talk_sessions_list': talk_sessions_list})
+    list_talks = TalkSession.objects.all()
+    return render(request, 'core/talks_list.html', {'list_talks': list_talks})
 
 # List all SPEAKERS
 
@@ -123,7 +129,3 @@ def speakers_list_view(request):
 def mock_view(request):
     test = Speaker.objects.all()
     return render(request, 'core/mock.html', {'test': test})
-
-
-def home_view(request):
-    return render(request, 'core/home.html')

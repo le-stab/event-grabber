@@ -1,3 +1,52 @@
 {% extends 'base.html' %} {% block 'body' %}
-<h1>Home</h1>
-{% endblock %}
+<h1>Talk manager and scheduler</h1>
+
+<h2 class="h3">Download an Event</h2>
+<p>Paste the URL containing the list of sessions (day) and select the corresponding template.</p>
+<div class="bd-box">
+  <form action="{% url 'home' %}" method="POST" class="row gy-2 gx-3 align-items-center">
+    {% csrf_token %}
+    <div class="col-auto">
+      <label for="" class="form-label">{{ form.event_tpl.label }}</label>
+      {{ form.event_tpl }}
+    </div>
+    <div class="mb-3">
+      <label for="form.event_url.id" class="form-label">{{ form.event_url.label }}</label>
+      {{ form.event_url }}
+    </div>
+    <div class="button-area">
+      <button type="submit" class="btn-primary btn btn-lg">Submit</button>
+    </div>
+  </form>
+</div>
+
+{% if list %}
+<div class="results">
+  <ul>
+    {% for item in list %}
+    <li>{{ item }}</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+<p>{{ my_result }}</p>
+
+<h2 class="h3">Latest Talks</h2>
+{% if latest_talks %}
+<div class="all-sessions">
+  <ul class="list-group">
+    {% for session in latest_talks %}
+    <li class="list-group-item list-group-item-action list-group-item-light">
+      <small class="badge bg-primary rounded-pill">{{ session.speaker }}</small>
+      <br />
+      {{ session.name }}, {{ session.event }} <br />
+      <audio controls="" preload="none" controlslist="nodownload" style="width: 100%">
+        <source src="{{ session.audio_file_path }}" type="audio/mpeg" />
+      </audio>
+    </li>
+    {% endfor %}
+  </ul>
+  <a href="{% url 'talks_list' %}" class="more">More Talks</a>
+</div>
+{% else %} No talks yet... {% endif %} {% endblock %} {% comment %} TO DO: LABEL FOR {% endcomment %}

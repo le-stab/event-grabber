@@ -1,20 +1,15 @@
 {% extends 'base.html' %} {% block 'body' %}
-<h1>All sessions</h1>
+<h2>All Talks</h2>
 
-{% if talk_sessions_list %}
+{% if list_talks %}
 <div class="all-sessions">
   <ul class="list-group">
-    {% for session in talk_sessions_list %}
+    {% for session in list_talks %}
     <li class="list-group-item list-group-item-action list-group-item-light">
       <small class="badge bg-primary rounded-pill">{{ session.speaker }}</small>
       <br />
       {{ session.name }}, {{ session.event }} <br />
-      <audio
-        controls=""
-        preload="none"
-        controlslist="nodownload"
-        style="width: 100%"
-      >
+      <audio controls="" preload="none" controlslist="nodownload" style="width: 100%">
         <source src="{{ session.audio_file_path }}" type="audio/mpeg" />
       </audio>
     </li>
