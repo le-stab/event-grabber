@@ -1,9 +1,5 @@
-from typing import Text
 from django import forms
-from django.db.models.query import QuerySet
-from django.forms import fields, widgets
-from django.forms import ModelForm, SelectMultiple, Select, TextInput
-from django.db import models
+from django.forms import Select, TextInput
 from .models import Event
 
 
