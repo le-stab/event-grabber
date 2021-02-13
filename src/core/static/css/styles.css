@@ -30,7 +30,6 @@ h1 {
 
 .card {
   display: inline-block;
-  min-height: 38vh;
   flex-direction: column;
   margin-bottom: 1rem;
   width: 100%;
