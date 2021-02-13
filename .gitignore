@@ -8,3 +8,5 @@ src/.vscode/settings.json
 env/pyvenv.cfg
 src/.vscode/settings.json
 .vscode/.prettierrc
+src/media/images/*
+src/media/mp3s/*
