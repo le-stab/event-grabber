@@ -20,7 +20,7 @@
   </form>
 </div>
 
-{% if list %}
+{% if list %} {% comment %}
 <div class="results">
   <ul>
     {% for item in list %}
@@ -33,7 +33,7 @@
     {% endfor %}
   </ul>
 </div>
-{% endif %}
+{% endcomment %} {% endif %}
 
 <p>{{ my_result }}</p>
 
