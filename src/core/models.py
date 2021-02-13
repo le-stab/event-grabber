@@ -1,8 +1,10 @@
 from django.db import models
-from django.db.models.deletion import CASCADE
+from django.db.models.deletion import CASCADE, SET_NULL
 from django.db.models.fields.related import ManyToManyField
 from django.db.models.query import FlatValuesListIterable
-
+from django.core.files import File
+import os
+import urllib.request
 # Create your models here.
 
 
@@ -14,47 +16,86 @@ class Category(models.Model):
 
 
 class Speaker(models.Model):
-    name = models.CharField(max_length=30, blank=False)
-    photo = models.CharField(max_length=100, blank=False)
+    name = models.CharField(max_length=30, blank=False, null=False)
+    photo = models.CharField(max_length=100, blank=True, null=True)
+    website = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self) -> str:
         return self.name
 
 
-class Event(models.Model):
-    name = models.CharField(
-        blank=False, max_length=60, verbose_name='Event name')
-    start_date = models.DateField(blank=True)
-    duration = models.IntegerField(blank=True, default=1)
-    category = models.ManyToManyField(Category)
-    schedule = models.CharField(
-        blank=True, max_length=20, verbose_name='Schedule path')
-    landing_page = models.CharField(blank=False, max_length=100)
+class EventTpl(models.Model):
+    name = models.CharField(max_length=30, blank=False, null=False)
+    schedule_path = models.CharField(
+        blank=True, null=True, max_length=20, verbose_name='Schedule path')
     css_link_button = models.CharField(
-        max_length=50, blank=True, verbose_name='Button link (CSS)')
+        max_length=50, blank=True, null=True, verbose_name='Button (CSS)')
     css_image = models.CharField(
-        max_length=50, blank=True, verbose_name='Photo (CSS)')
-    css_talk_session = models.CharField(
-        max_length=50, blank=True, verbose_name='Talk title (CSS)')
+        max_length=50, blank=True, null=True, verbose_name='Photo (CSS)')
+    css_talk_title = models.CharField(
+        max_length=50, blank=True, null=True, verbose_name='Title (CSS)')
+    css_talk_topics = models.CharField(
+        max_length=50, blank=True, null=True, verbose_name='List of topics (CSS)')
     css_speaker_name = models.CharField(
-        max_length=50, blank=True, verbose_name='Speaker name (CSS)')
+        max_length=50, blank=True, null=True, verbose_name='Speaker name (CSS)')
     css_audio_file = models.CharField(
-        max_length=50, blank=True, verbose_name='Audio file (CSS)')
+        max_length=50, blank=True, null=True, verbose_name='Audio file (CSS)')
     css_video_file = models.CharField(
-        max_length=50, blank=True, verbose_name='Video file (CSS)')
-    scrape_ready = models.BooleanField(blank=True, default=False)
+        max_length=50, blank=True, null=True, verbose_name='Video file (CSS)')
 
     def __str__(self) -> str:
         return f"{self.name}"
 
 
-class TalkSession(models.Model):
-    name = models.CharField(max_length=60, blank=False,
-                            verbose_name='Session name')
-    speaker = models.ForeignKey(
-        Speaker, on_delete=CASCADE, verbose_name='Speaker name')
-    event = models.ForeignKey(Event, on_delete=CASCADE)
-    audio_file_path = models.URLField()
+class Event(models.Model):
+    name = models.CharField(blank=False, max_length=60,
+                            verbose_name='Event name')
+    start_date = models.DateField(blank=True)
+    duration = models.IntegerField(blank=True, default=1)
+    category = models.ManyToManyField(Category)
+    landing_page = models.CharField(blank=False, max_length=100)
+    event_tpl = models.ForeignKey(
+        EventTpl, on_delete=SET_NULL, blank=True, null=True)
+    scrape_ready = models.BooleanField(blank=True, default=False)
 
     def __str__(self) -> str:
-        return f"Event: {self.name}"
+        return f'{self.name}'
+
+
+class TalkSession(models.Model):
+    name = models.CharField(max_length=60, null=True, blank=True,
+                            verbose_name='Session name')
+    speaker = models.ForeignKey(
+        Speaker, on_delete=SET_NULL, verbose_name='Speaker name', null=True, blank=True)
+    event = models.ForeignKey(Event, on_delete=SET_NULL, null=True, blank=True)
+    image_url = models.URLField(null=True, blank=True)
+    image_file = models.ImageField(upload_to="images", null=True, blank=True)
+    mp3_url = models.URLField(null=True, blank=True)
+    mp3_file = models.FileField(upload_to="mp3s", null=True, blank=True)
+
+    def __str__(self) -> str:
+        return f"Talk: {self.name}"
+
+    def get_remote_image(self):
+        if self.image_url and not self.image_file:
+            r = urllib.request.build_opener()
+            r.addheaders = [("User-agent", "Mozilla/5.0")]
+            urllib.request.install_opener(r)
+            result = urllib.request.urlretrieve(self.image_url, "")
+            self.image_file.save(
+                os.path.basename(self.image_url),
+                File(open(result[0], "rb")),
+            )
+            self.save()
+
+    def get_remote_mp3(self):
+        if self.mp3_url and not self.mp3_file:
+            r = urllib.request.build_opener()
+            r.addheaders = [("User-agent", "Mozilla/5.0")]
+            urllib.request.install_opener(r)
+            result = urllib.request.urlretrieve(self.mp3_url, "")
+            self.mp3_file.save(
+                os.path.basename(self.mp3_url),
+                File(open(result[0], "rb")),
+            )
+            self.save()

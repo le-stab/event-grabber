@@ -15,7 +15,7 @@ class EventSingleForm(forms.Form):
     )
     # Create drop-down select based on all the objects in Event model
     event_tpl = forms.ModelChoiceField(
-        label='Event template: ',
+        label='Event: ',
         required=True,
         widget=Select(attrs={'class': 'form-select'}),
         queryset=Event.objects.all())

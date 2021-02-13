@@ -1,6 +1,6 @@
 from django.http import request
 from django.shortcuts import render
-from .models import Event, Speaker, TalkSession
+from .models import Event, Speaker, TalkSession, EventTpl
 from bs4 import BeautifulSoup
 import requests
 from .forms import EventSingleForm
@@ -22,14 +22,19 @@ def home_view(request):
 
             # Get existing Event object from DB (Event Model) based on the "event_url" param and save it in POST_event_url var
             POST_event_url = filled_form.cleaned_data['event_url']
-            existing_event_tpl_object = Event.objects.get(
+            selected_event = Event.objects.get(
                 name=filled_form.cleaned_data['event_tpl'])
 
-            # Set CSS selectors from the existing Event object so these vars can be used in the different BS4 objects
-            css_link_button = existing_event_tpl_object.css_link_button
-            css_title = existing_event_tpl_object.css_talk_session
-            css_speaker_name = existing_event_tpl_object.css_speaker_name
-            css_audio_file = existing_event_tpl_object.css_audio_file
+            # Get the Event Template Object  to access the CSS variables
+            event_template = EventTpl.objects.get(
+                name=selected_event.event_tpl)
+
+            # Set CSS selectors from the existing Event Template object to use in BS4 objects
+            css_link_button = event_template.css_link_button
+            css_title = event_template.css_talk_title
+            css_speaker_name = event_template.css_speaker_name
+            css_photo = event_template.css_image
+            css_audio_file = event_template.css_audio_file
 
             # Create a BS4 object for the INDEX_PAGE based on the url we got from POST_event_url
             # In our INDEX_page extract all the links using the CSS selector using css_link_button (Admin / Event)
@@ -37,11 +42,11 @@ def home_view(request):
             bs4_INDEX_PAGE_soup = BeautifulSoup(
                 bs4_INDEX_PAGE_url.text, "html.parser")
             bs4_link_buttons = bs4_INDEX_PAGE_soup.select(css_link_button)
-            bs4_speaker_name = bs4_INDEX_PAGE_soup.select(css_link_button)
-
+            bs4_photo = bs4_INDEX_PAGE_soup.select(css_photo)
+            # print(bs4_photo['src'])
             # From the list of links iterate and create a new BS4 object so we can access each DETAIL_PAGE
             # Let's extract TITLE, SPEAKER_NAME and AUDIO_FILE from this page
-            for link in bs4_link_buttons:
+            for i, link in enumerate(bs4_link_buttons):
                 bs4_DETAIL_PAGE_url = requests.get(link['href'])
                 bs4_DETAIL_PAGE_soup = BeautifulSoup(
                     bs4_DETAIL_PAGE_url.text, "html.parser")
@@ -81,7 +86,7 @@ def home_view(request):
                     print(f'speaker exists: id {speaker_object.id}')
                 else:
                     speaker_object = Speaker(name=SPEAKER_NAME)
-                    speaker_object.save()
+                    # speaker_object.save()
                     print(
                         f'speaker does  NOT exists: new speaker id {speaker_object.id}')
 
@@ -92,13 +97,13 @@ def home_view(request):
                     pass
                 else:
                     new_talk_session = TalkSession(
-                        name=TITLE, speaker=speaker_object, event=existing_event_tpl_object, audio_file_path=AUDIO_FILE)
-                    new_talk_session.save()
+                        name=TITLE, speaker=speaker_object, event=selected_event, audio_file_path=AUDIO_FILE)
+                    # new_talk_session.save()
                     print(
-                        f'talk session does NOT exists: new session id:{new_talk_session.id}, with speaker id: {speaker_object.id}, and event id: {existing_event_tpl_object.id}')
+                        f'talk session does NOT exists: new session id:{new_talk_session.id}, with speaker id: {speaker_object.id}, and event id: {selected_event.id}')
 
                 list.append(
-                    f"{TITLE} ||| {SPEAKER_NAME} ({speaker_object.id}) ||| {AUDIO_FILE}")
+                    [[TITLE], [SPEAKER_NAME], [speaker_object.id], [AUDIO_FILE], [bs4_photo[i]['src']]])
 
             return render(request, 'core/home.html', {'form': form, 'list': list})
     else:

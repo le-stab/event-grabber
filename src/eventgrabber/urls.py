@@ -17,8 +17,11 @@ from django.contrib import admin
 from django.urls import path
 from core import views
 
+from django.conf import settings
+from django.conf.urls.static import static
+
 urlpatterns = [
     path(r'admin/', admin.site.urls),
     path('', views.home_view, name='home'),
     path('talks/list', views.talks_list_view, name="talks_list"),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

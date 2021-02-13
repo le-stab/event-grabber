@@ -24,7 +24,12 @@
 <div class="results">
   <ul>
     {% for item in list %}
-    <li>{{ item }}</li>
+    <li>
+      <div>Title: {{ item.0.0 }}</div>
+      <div>Speaker: {{ item.1.0 }} - id: {{ item.2.0 }}</div>
+      <div>MP3: <a href="{{ item.3.0 }}">file</a></div>
+      <div>Photo: <img src="{{ item.4.0 }}" width="300" alt="" /></div>
+    </li>
     {% endfor %}
   </ul>
 </div>
