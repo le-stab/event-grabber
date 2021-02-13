@@ -45,11 +45,13 @@ def home_view(request):
             bs4_photo = bs4_INDEX_PAGE_soup.select(css_photo)
             # print(bs4_photo['src'])
             # From the list of links iterate and create a new BS4 object so we can access each DETAIL_PAGE
-            # Let's extract TITLE, SPEAKER_NAME and AUDIO_FILE from this page
+            # Let's extract TITLE, SPEAKER_NAME and MP3_URL from this page
             for i, link in enumerate(bs4_link_buttons):
                 bs4_DETAIL_PAGE_url = requests.get(link['href'])
                 bs4_DETAIL_PAGE_soup = BeautifulSoup(
                     bs4_DETAIL_PAGE_url.text, "html.parser")
+
+                SPEAKER_PHOTO = bs4_photo[i]['src']
 
                 # Get the TITLE using its CSS selector (from admin / Event), split() the string using 'with'
                 # and return the first instance of the list created by the split() method
@@ -65,8 +67,8 @@ def home_view(request):
                 SPEAKER_NAME = bs4_DETAIL_PAGE_soup.select_one(
                     css_speaker_name).text.split(',')[0].replace('with', '').strip()
 
-                # Get AUDIO_FILE
-                AUDIO_FILE = bs4_DETAIL_PAGE_soup.find(
+                # Get MP3_URL
+                MP3_URL = bs4_DETAIL_PAGE_soup.find(
                     css_audio_file)['src']
 
                 # SPEAKER exists?
@@ -75,7 +77,7 @@ def home_view(request):
 
                 # Session exists?
                 # yes - do nothing
-                # no - create session and assign TITLE, SPEAKER_id, AUDIO_FILE, EVENT
+                # no - create session and assign TITLE, SPEAKER_id, MP3_URL, EVENT
                 # ADD creation date to handle future scenarios with the same session name but different dates
 
                 # IF SPEAKER_NAME exists in DB (Speaker Model) get the ID
@@ -85,8 +87,10 @@ def home_view(request):
                         name=SPEAKER_NAME)
                     print(f'speaker exists: id {speaker_object.id}')
                 else:
-                    speaker_object = Speaker(name=SPEAKER_NAME)
-                    # speaker_object.save()
+                    speaker_object = Speaker(
+                        name=SPEAKER_NAME, img_url=SPEAKER_PHOTO)
+                    speaker_object.get_remote_image()
+                    speaker_object.save()
                     print(
                         f'speaker does  NOT exists: new speaker id {speaker_object.id}')
 
@@ -97,13 +101,14 @@ def home_view(request):
                     pass
                 else:
                     new_talk_session = TalkSession(
-                        name=TITLE, speaker=speaker_object, event=selected_event, audio_file_path=AUDIO_FILE)
-                    # new_talk_session.save()
+                        name=TITLE, speaker=speaker_object, event=selected_event, mp3_url=MP3_URL)
+                    new_talk_session.get_remote_mp3()
+                    new_talk_session.save()
                     print(
                         f'talk session does NOT exists: new session id:{new_talk_session.id}, with speaker id: {speaker_object.id}, and event id: {selected_event.id}')
 
                 list.append(
-                    [[TITLE], [SPEAKER_NAME], [speaker_object.id], [AUDIO_FILE], [bs4_photo[i]['src']]])
+                    [[TITLE], [SPEAKER_NAME], [speaker_object.id], [MP3_URL], [bs4_photo[i]['src']]])
 
             return render(request, 'core/home.html', {'form': form, 'list': list})
     else:
@@ -115,9 +120,8 @@ def home_view(request):
                        'latest_events_list': latest_events,
                        })
 
+
 # List all TALK SESSIONS
-
-
 def talks_list_view(request):
     # Get all sessions (order by date)
     list_talks = TalkSession.objects.all()

@@ -17,8 +17,25 @@ class Category(models.Model):
 
 class Speaker(models.Model):
     name = models.CharField(max_length=30, blank=False, null=False)
-    photo = models.CharField(max_length=100, blank=True, null=True)
+    img_url = models.URLField(null=True, blank=True,
+                              verbose_name='photo remote url')
+    img_file = models.ImageField(
+        upload_to="images", null=True, blank=True, verbose_name='photo file')
     website = models.CharField(max_length=100, blank=True, null=True)
+
+    def get_remote_image(self):
+        if self.img_url and not self.img_file:
+            r = urllib.request.build_opener()
+            r.addheaders = [("User-agent", "Mozilla/5.0")]
+            urllib.request.install_opener(r)
+            result = urllib.request.urlretrieve(self.img_url, "")
+            print(f'Getting IMG file for {self.name}...')
+            self.img_file.save(
+                os.path.basename(self.img_url),
+                File(open(result[0], "rb")),
+            )
+            print('Done')
+            self.save()
 
     def __str__(self) -> str:
         return self.name
@@ -68,34 +85,24 @@ class TalkSession(models.Model):
     speaker = models.ForeignKey(
         Speaker, on_delete=SET_NULL, verbose_name='Speaker name', null=True, blank=True)
     event = models.ForeignKey(Event, on_delete=SET_NULL, null=True, blank=True)
-    image_url = models.URLField(null=True, blank=True)
-    image_file = models.ImageField(upload_to="images", null=True, blank=True)
-    mp3_url = models.URLField(null=True, blank=True)
-    mp3_file = models.FileField(upload_to="mp3s", null=True, blank=True)
+    mp3_url = models.URLField(null=True, blank=True,
+                              verbose_name='mp3 remote url')
+    mp3_file = models.FileField(
+        upload_to="mp3s", null=True, blank=True, verbose_name='mp3 file')
 
     def __str__(self) -> str:
         return f"Talk: {self.name}"
-
-    def get_remote_image(self):
-        if self.image_url and not self.image_file:
-            r = urllib.request.build_opener()
-            r.addheaders = [("User-agent", "Mozilla/5.0")]
-            urllib.request.install_opener(r)
-            result = urllib.request.urlretrieve(self.image_url, "")
-            self.image_file.save(
-                os.path.basename(self.image_url),
-                File(open(result[0], "rb")),
-            )
-            self.save()
 
     def get_remote_mp3(self):
         if self.mp3_url and not self.mp3_file:
             r = urllib.request.build_opener()
             r.addheaders = [("User-agent", "Mozilla/5.0")]
             urllib.request.install_opener(r)
+            print(f'Getting MP3 file for {self.name}...')
             result = urllib.request.urlretrieve(self.mp3_url, "")
             self.mp3_file.save(
                 os.path.basename(self.mp3_url),
                 File(open(result[0], "rb")),
             )
+            print('Done')
             self.save()
