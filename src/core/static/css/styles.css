@@ -2,6 +2,14 @@ body {
   background: #cccccc4f;
 }
 
+nav {
+  margin-bottom: 2rem;
+}
+
+h1 {
+  margin-bottom: 1rem;
+}
+
 .h3 {
   margin-top: 1.5rem;
 }
@@ -14,13 +22,23 @@ body {
   background: #fff;
 }
 
-.button-area {
-}
-
 .button-area button {
   margin: 0 auto;
   display: block;
   width: 40%;
+}
+
+.card {
+  display: inline-block;
+  min-height: 38vh;
+  flex-direction: column;
+  margin-bottom: 1rem;
+  width: 100%;
+  margin: 0 0 2.5rem 0;
+}
+
+.card:hover {
+  background: rgba(166, 255, 206, 0.178);
 }
 
 @media (min-width: 576px) {
@@ -37,6 +55,11 @@ body {
     margin: 0 auto;
     display: block;
     width: 20%;
+  }
+
+  .card {
+    width: 18%;
+    margin: 0.5rem 0.5rem;
   }
 }
 

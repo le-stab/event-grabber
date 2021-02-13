@@ -43,7 +43,7 @@
   <ul class="list-group">
     {% for session in latest_talks %}
     <li class="list-group-item list-group-item-action list-group-item-light">
-      <small class="badge bg-primary rounded-pill">{{ session.speaker }}</small>
+      <small class="badge bg-primary rounded-pill">{{ session.speaker }}</small> <span class="badge bg-warning rounded-pill">New!</span>
       <br />
       {{ session.name }}, {{ session.event }} <br />
       <audio controls="" preload="none" controlslist="nodownload" style="width: 100%">
@@ -52,6 +52,6 @@
     </li>
     {% endfor %}
   </ul>
-  <a href="{% url 'talks_list' %}" class="more">More Talks</a>
+  <a href="{% url 'talks_list' %}" class="more">More Talks ></a>
 </div>
 {% else %} No talks yet... {% endif %} {% endblock %} {% comment %} TO DO: LABEL FOR {% endcomment %}

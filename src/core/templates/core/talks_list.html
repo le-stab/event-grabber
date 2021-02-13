@@ -1,19 +1,24 @@
-{% extends 'base.html' %} {% block 'body' %}
-<h2>All Talks</h2>
-
+{% extends 'base.html' %} {% load static %} {% block 'body' %}
+<h1>All Talks</h1>
 {% if list_talks %}
-<div class="all-sessions">
-  <ul class="list-group">
-    {% for session in list_talks %}
-    <li class="list-group-item list-group-item-action list-group-item-light">
-      <small class="badge bg-primary rounded-pill">{{ session.speaker }}</small>
-      <br />
-      {{ session.name }}, {{ session.event }} <br />
-      <audio controls="" preload="none" controlslist="nodownload" style="width: 100%">
-        <source src="{{ session.audio_file_path }}" type="audio/mpeg" />
-      </audio>
-    </li>
+<div class="all-talks row">
+  <div class="col">
+    {% for talk in list_talks %}
+    <div class="card">
+      <img src="{% get_media_prefix %}{{ talk.speaker.img_file }}" class="card-img-top" alt="..." />
+      <div class="card-body">
+        <small class="badge bg-secondary rounded-pill">{{ talk.event }}</small>
+        <h5 class="card-title">{{ talk.name }}</h5>
+        <p class="card-text">By {{ talk.speaker.name }}</p>
+        {% comment %} <a href="#" class="btn btn-success">Listen</a> {% endcomment %}
+      </div>
+      <div class="audio-player">
+        <audio controls="" preload="none" controlslist="nodownload" style="width: 100%" id="">
+          <source src="{% get_media_prefix %}{{ talk.mp3_file }}" type="audio/mpeg" />
+        </audio>
+      </div>
+    </div>
     {% endfor %}
-  </ul>
+  </div>
 </div>
 {% endif %} {% endblock %}
