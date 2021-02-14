@@ -1,7 +1,6 @@
 from django.db import models
 from django.db.models.deletion import CASCADE, SET_NULL
 from django.db.models.fields.related import ManyToManyField
-from django.db.models.query import FlatValuesListIterable
 from django.core.files import File
 import os
 import urllib.request
