@@ -113,18 +113,16 @@ def home_view(request):
             return render(request, 'core/home.html', {'form': form, 'list': list})
     else:
         latest_talks = TalkSession.objects.all().order_by('-id')[:5]
-        latest_events = Event.objects.all()
         return render(request, 'core/home.html',
                       {'form': form,
-                       'latest_talks': latest_talks,
-                       'latest_events_list': latest_events,
+                       'latest_talks': latest_talks
                        })
 
 
 # List all TALK SESSIONS
 def talks_list_view(request):
     # Get all sessions (order by date)
-    list_talks = TalkSession.objects.all()
+    list_talks = TalkSession.objects.all().order_by('-id')
     return render(request, 'core/talks_list.html', {'list_talks': list_talks})
 
 # List all SPEAKERS
