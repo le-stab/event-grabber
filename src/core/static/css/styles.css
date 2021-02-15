@@ -57,9 +57,14 @@ h1 {
   }
 
   .card {
-    width: 18%;
+    width: 30%;
     margin: 0.5rem 0.5rem;
   }
+}
+
+@media (min-width: 876px) {
+  .card {
+    width: 25%;
 }
 
 .more {

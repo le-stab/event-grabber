@@ -27,14 +27,19 @@ class Speaker(models.Model):
             r = urllib.request.build_opener()
             r.addheaders = [("User-agent", "Mozilla/5.0")]
             urllib.request.install_opener(r)
-            result = urllib.request.urlretrieve(self.img_url, "")
-            print(f'Getting IMG file for {self.name}...')
-            self.img_file.save(
-                os.path.basename(self.img_url),
-                File(open(result[0], "rb")),
-            )
-            print('Done')
-            self.save()
+            if os.path.isfile(os.path.basename(self.img_url)):
+                print('-- ING Exists, do not save...')
+                pass
+            else:    
+                result = urllib.request.urlretrieve(self.img_url, "")
+                print('-- IMG does NOT exists, saving...')  
+                self.img_file.save(
+                    os.path.basename(self.img_url),
+                    File(open(result[0], "rb")),
+                )
+                print('Done')
+                self.save()
+
 
     def __str__(self) -> str:
         return self.name
@@ -60,7 +65,7 @@ class EventTpl(models.Model):
         max_length=50, blank=True, null=True, verbose_name='Video file (CSS)')
 
     def __str__(self) -> str:
-        return f"{self.name}"
+        return f'{self.name}'
 
 
 class Event(models.Model):
@@ -90,18 +95,22 @@ class TalkSession(models.Model):
         upload_to="mp3s", null=True, blank=True, verbose_name='mp3 file')
 
     def __str__(self) -> str:
-        return f"Talk: {self.name}"
+        return f'Talk: {self.name}'
 
     def get_remote_mp3(self):
         if self.mp3_url and not self.mp3_file:
             r = urllib.request.build_opener()
-            r.addheaders = [("User-agent", "Mozilla/5.0")]
-            urllib.request.install_opener(r)
-            print(f'Getting MP3 file for {self.name}...')
-            result = urllib.request.urlretrieve(self.mp3_url, "")
-            self.mp3_file.save(
-                os.path.basename(self.mp3_url),
-                File(open(result[0], "rb")),
-            )
-            print('Done')
-            self.save()
+            r.addheaders = [('User-agent', 'Mozilla/5.0')]
+            urllib.request.install_opener(r)            
+            if os.path.isfile(os.path.basename(self.mp3_url)):
+                print('-- MP3 Exists, do not save...')
+                pass
+            else:
+                print('-- MP3 does NOT exists, saving...')                
+                result = urllib.request.urlretrieve(self.mp3_url, '')
+                self.mp3_file.save(
+                    f'{self.speaker} - {self.name}.mp3',
+                    File(open(result[0], 'rb')),
+                )
+                print('Done')
+                self.save()

@@ -43,14 +43,16 @@ def home_view(request):
                 bs4_INDEX_PAGE_url.text, "html.parser")
             bs4_link_buttons = bs4_INDEX_PAGE_soup.select(css_link_button)
             bs4_photo = bs4_INDEX_PAGE_soup.select(css_photo)
+
             # print(bs4_photo['src'])
             # From the list of links iterate and create a new BS4 object so we can access each DETAIL_PAGE
             # Let's extract TITLE, SPEAKER_NAME and MP3_URL from this page
-            for i, link in enumerate(bs4_link_buttons):
+            for i, link in enumerate(bs4_link_buttons, start=0):
                 bs4_DETAIL_PAGE_url = requests.get(link['href'])
                 bs4_DETAIL_PAGE_soup = BeautifulSoup(
                     bs4_DETAIL_PAGE_url.text, "html.parser")
 
+                # Create SPEAKER_PHOTO list just containing the SRC value
                 SPEAKER_PHOTO = bs4_photo[i]['src']
 
                 # Get the TITLE using its CSS selector (from admin / Event), split() the string using 'with'
@@ -85,27 +87,25 @@ def home_view(request):
                     # Exists, get Speaker object
                     speaker_object = Speaker.objects.get(
                         name=SPEAKER_NAME)
-                    print(f'speaker exists: id {speaker_object.id}')
+                    print(f'SPEAKER exists: id {speaker_object.id}')
                 else:
                     speaker_object = Speaker(
                         name=SPEAKER_NAME, img_url=SPEAKER_PHOTO)
                     speaker_object.get_remote_image()
+                    print(f'SPEAKER [DOES NOT exists]: new speaker id {speaker_object.id}')
                     speaker_object.save()
-                    print(
-                        f'speaker does  NOT exists: new speaker id {speaker_object.id}')
 
                 # Check if TalkSession already exists in DB
                 if len(TalkSession.objects.filter(name=TITLE)) != 0:
                     # Exists, do nothing
-                    print('talk session exists: do nothing')
+                    print('TALK [exists]: Do nothing')
                     pass
                 else:
                     new_talk_session = TalkSession(
                         name=TITLE, speaker=speaker_object, event=selected_event, mp3_url=MP3_URL)
                     new_talk_session.get_remote_mp3()
+                    print(f'TALK [DOES NOT exists]: New talk id:{new_talk_session.id}, with speaker id: {speaker_object.name}, and event id: {selected_event.id}')
                     new_talk_session.save()
-                    print(
-                        f'talk session does NOT exists: new session id:{new_talk_session.id}, with speaker id: {speaker_object.id}, and event id: {selected_event.id}')
 
                 list.append(
                     [[TITLE], [SPEAKER_NAME], [speaker_object.id], [MP3_URL], [bs4_photo[i]['src']]])

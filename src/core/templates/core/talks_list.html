@@ -1,8 +1,8 @@
 {% extends 'base.html' %} {% load static %} {% block 'body' %}
 <h1>All Talks</h1>
 {% if list_talks %}
-<div class="all-talks row">
-  <div class="col">
+<div class="row all-talks">
+  <div class="row align-items-start">
     {% for talk in list_talks %}
     <div class="card">
       <img src="{% get_media_prefix %}{{ talk.speaker.img_file }}" class="card-img-top" alt="..." />
