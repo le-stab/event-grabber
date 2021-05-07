@@ -48,7 +48,11 @@ def home_view(request):
             # From the list of links iterate and create a new BS4 object so we can access each DETAIL_PAGE
             # Let's extract TITLE, SPEAKER_NAME and MP3_URL from this page
             for i, link in enumerate(bs4_link_buttons, start=0):
-                bs4_DETAIL_PAGE_url = requests.get(link['href'])
+                try:   
+                    bs4_DETAIL_PAGE_url = requests.get(link['href'])
+                except:
+                    continue
+            
                 bs4_DETAIL_PAGE_soup = BeautifulSoup(
                     bs4_DETAIL_PAGE_url.text, "html.parser")
 
