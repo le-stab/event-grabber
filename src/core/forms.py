@@ -8,7 +8,7 @@ class EventSingleForm(forms.Form):
     event_day = forms.CharField(
         label='Day: ',
         required=False,
-        widget=TextInput(attrs={'class': 'form-control', 'size': '10'}),
+        widget=TextInput(attrs={'class': 'form-control', 'size': '10', 'placeholder': 'Enter the event day (number) or leave empty to download the full event'}),
     )
     # Create drop-down select based on all the objects in Event model
     event_tpl = forms.ModelChoiceField(
