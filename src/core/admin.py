@@ -4,7 +4,6 @@ from .models import *
 
 # Register your models here.
 admin.site.register(Event)
-admin.site.register(TalkSession)
 admin.site.register(Category)
 admin.site.register(EventTpl)
 
@@ -15,3 +14,7 @@ class SpeakerAdmin(admin.ModelAdmin):
         return format_html('<img src="{}" width="80" />'.format(obj.img_url))
     img_tag.short_description = 'Image'
     list_display = ['id', 'img_tag','name']
+
+@admin.register(TalkSession)
+class TalkSessionAdmin(admin.ModelAdmin):
+    list_display = ['event','name']
